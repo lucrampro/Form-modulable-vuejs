@@ -34,108 +34,15 @@
 
     export default {
         name: 'formulaire',
+        beforeMount() {
+            this.crm_information = this.$props.crm_key;
+            this.steps = this.$props.data_api;
+        },
         data() {
             return {
                 actualy_step: 0,
-                crm_information: {
-                    field_QN5rroAG: '',
-                    field_ukyxr48g: '',
-                    field_G4bPJ0RO: '',
-                    field_qEzkxK0g: '',
-                    field_SVRbIDv4: '',
-                    field_djqQB8v4: 'budget',
-                    field_yfp8JXUj: '',
-                    name: '',
-                    company: '',
-                    phone: '',
-                    email: '',
-                    message: '',
-                },
-                steps: [{
-                    name: 'Projet',
-                    content: [{
-                            type: 'button',
-                            value: 'CMS & Web',
-                            crm: 'field_QN5rroAG',
-                        },
-                        {
-                            type: 'button',
-                            value: 'E-commerce',
-                            crm: 'field_QN5rroAG',
-                        },
-                        {
-                            type: 'button',
-                            value: 'Marketplace',
-                            crm: 'field_QN5rroAG',
-                        },
-                    ]
-                }, {
-                    name: 'Details',
-                    content: [{
-                            type: 'textarea',
-                            value: 'Decrivez le ou les projet',
-                            crm: 'field_ukyxr48g',
-                        },
-                        {
-                            type: 'textarea',
-                            value: 'Décrivez quelles sont les objectifs à atteindre',
-                            crm: 'field_G4bPJ0RO',
-                        },
-                        {
-                            type: 'textarea',
-                            value: 'Indiquez les principaux éléments qui vous différencient de la concurrence',
-                            crm: 'field_qEzkxK0g'
-                        },
-                        {
-                            type: 'textarea',
-                            value: 'Décrivez le profil de votre cible',
-                            crm: 'field_SVRbIDv4'
-                        }
-                    ],
-                }, {
-                    name: 'Budget',
-                    content: [{
-                            type: 'budget',
-                            value: 'Avez vous un budget défini à allouer à la mise en place de votre projet ?',
-                            crm: 'field_djqQB8v4'
-                        },
-                        {
-                            type: 'select',
-                            text: 'Quel est le délai de mise en production de votre projet ?',
-                            value: ['1-3mois', '3-6mois', '6-9mois', '12mois +'],
-                            crm: 'field_yfp8JXUj'
-                        },
-                        {
-                            type: 'textarea',
-                            value: 'Si vous avez-vous des informations complémentaires, n’hésitez pas à les ajouter ici.',
-                            crm: 'message'
-                        },
-                    ]
-                }, {
-                    name: 'Info',
-                    content: [{
-                            type: 'input',
-                            value: 'Quel est le nom de votre entreprise ?',
-                            crm: 'company'
-                        },
-                        {
-                            type: 'input',
-                            value: 'Comment vous appelez-vous ?',
-                            crm: 'name'
-                        },
-                        {
-                            type: 'input',
-                            value: 'Sur quel email peut-on vous écrire ?',
-                            crm: 'email'
-                        },
-                        {
-                            type: 'input',
-                            value: 'Sur quel téléphone peut-on vous appeler ?',
-                            crm: 'phone'
-                        },
-                    ]
-                }],
-
+                crm_information: {},
+                steps: [],
             }
         },
         components: {
@@ -161,16 +68,31 @@
                     console.log(this.actualy_step);
                     this.actualy_step += 1
                 } else if (step_1 && this.actualy_step == this.steps.length -1) {
-                    this.apiRequest(
-                        'https://nux-crm.mojitoprod.fr/api/campaign_forms/4/leads',
-                        'POST', {
-                            'Content-Type': 'application/json',
-                            Authorization: 'Bearer PASdnFymF5rwyh79bGwnUBf2CTB5qpXa4PhkJdXpBXm9eYBfEycnBoc3BpvaEVmlfOy8JYhon8LeO4kz',
+                    // this.apiRequest(
+                    //     'https://nux-crm.mojitoprod.fr/api/campaign_forms/4/leads',
+                    //     'POST', {
+                    //         'Content-Type': 'application/json',
+                    //         Authorization: 'Bearer PASdnFymF5rwyh79bGwnUBf2CTB5qpXa4PhkJdXpBXm9eYBfEycnBoc3BpvaEVmlfOy8JYhon8LeO4kz',
+                    //     },
+                    //     this.crm_information
+                    // ).then(response => {
+                    //     // this.step += 1;
+                    //     // this.form_is_ok = response;
+                    //     console.log(response);
+                    // })
+                    console.log(JSON.stringify(this.crm_information));
+                    fetch('https://nux-crm.mojitoprod.fr/api/campaign_forms/4/leads', {
+                        method: 'post',
+                        headers: {
+                            'Authorization': 'Bearer PASdnFymF5rwyh79bGwnUBf2CTB5qpXa4PhkJdXpBXm9eYBfEycnBoc3BpvaEVmlfOy8JYhon8LeO4kz',
+                            // 'Access-Control-Allow-Origin': 'http://localhost:8080/'
                         },
-                        this.crm_information
-                    ).then(response => {
-                        // this.step += 1;
-                        // this.form_is_ok = response;
+                        body: JSON.stringify(this.crm_information),
+                    })
+                    .then( promise => {
+                        return promise.json()
+                    })
+                    .then(response => {
                         console.log(response);
                     })
                 } else if (step_1 == false) {
@@ -210,6 +132,10 @@
 
                 return result
             },
+        },
+        props: {
+            crm_key: Object,
+            data_api: Array
         }
     }
 </script>
